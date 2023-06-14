@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package munchkin.v1;
+
+
+option go_package = "github.com/highgrav/munchkin/api/wal_v1";
+
+message WalEntry {
+  uint64 Timestamp = 1;
+  bytes Key = 2;
+  bytes Pattern = 3;
+  uint32 Action = 4;
+}
+
+
+service Wal {
+  rpc PublishEntryStreamFromTime(PublishEntryRequest) returns (stream PublishEntryResponse){}
+  rpc LogEntry(LogEntryRequest) returns (LogEntryResponse){}
+  rpc LogEntryStream(stream LogEntryRequest) returns (stream LogEntryResponse){}
+}
+
+/* Request the entry at or after the timestamp */
+message PublishEntryRequest{
+  uint64 Timestamp = 1;
+}
+
+message PublishEntryResponse {
+  string FileName = 1;
+  WalEntry Entry = 2;
+}
+
+message LogEntryRequest {
+  string FileName = 1;
+  WalEntry Entry = 2;
+}
+
+message LogEntryResponse {
+  uint64 Timestamp = 1;
+}
